@@ -10,11 +10,20 @@ const markers = [
 ];
 
 export default function App() {
-  renderMarker = (marker) => <Marker key={marker.id} coordinate={marker.location} title={marker.title} description={marker.description} />;
+  renderMarker = (marker) => (
+    <Marker
+      identifier={marker.id}
+      key={marker.id}
+      coordinate={marker.location}
+      title={marker.title}
+      description={marker.description}
+      tracksViewChanges={false}
+    />
+  );
 
   renderCluster = (cluster, onPress) => {
     return (
-      <Marker coordinate={cluster.coordinate} onPress={onPress}>
+      <Marker identifier={cluster.clusterId} coordinate={cluster.coordinate} onPress={onPress}>
         <View style={styles.myClusterStyle}>
           <Text style={styles.myClusterTextStyle}>
             {cluster.pointCount}
@@ -22,6 +31,10 @@ export default function App() {
         </View>
       </Marker>
     );
+  }
+
+  onMarkerPress = (event) => {
+    console.log("onMarkerPress " + event.nativeEvent.id);
   }
 
   return (
@@ -36,6 +49,7 @@ export default function App() {
         latitudeDelta: 0.0922,
         longitudeDelta: 0.0421,
       }}
+      onMarkerPress={onMarkerPress}
     />
   );
 }
