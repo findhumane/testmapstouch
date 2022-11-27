@@ -1,57 +1,62 @@
 import React from 'react';
-import MapView, { Callout, Marker } from 'react-native-maps';
+import { Marker } from 'react-native-maps';
 import { StyleSheet, Text, View } from 'react-native';
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  map: {
-    width: '100%',
-    height: '100%',
-  },
-  calloutTitle: {
-    fontWeight: "bold",
-    alignSelf: "center",
-  },
-});
+import ClusteredMapView from 'react-native-maps-super-cluster-fh';
 
 const markers = [
-  { title: "Test1", description: "Hello World", coordinate: { latitude: 30.270652526064772, longitude: -97.75368988587985 } },
-  { title: "Test2", description: "Hello World", coordinate: { latitude: 30.269826083021613, longitude: -97.75316677471446 } },
-  { title: "Test3", description: "Hello World", coordinate: { latitude: 30.270928005532998, longitude: -97.75273297521144 } },
+  { id: 1, title: "Test1", description: "Hello World", location: { latitude: 30.270652526064772, longitude: -97.75368988587985 } },
+  { id: 2, title: "Test2", description: "Hello World", location: { latitude: 30.269826083021613, longitude: -97.75316677471446 } },
+  { id: 3, title: "Test3", description: "Hello World", location: { latitude: 30.270928005532998, longitude: -97.75273297521144 } },
 ];
 
 export default function App() {
-  async function onPressMarkerCallout(marker) {
-    console.log("marker pressed: " + marker.title);
+  renderMarker = (marker) => <Marker key={marker.id} coordinate={marker.location} title={marker.title} description={marker.description} />;
+
+  renderCluster = (cluster, onPress) => {
+    return (
+      <Marker coordinate={cluster.coordinate} onPress={onPress}>
+        <View style={styles.myClusterStyle}>
+          <Text style={styles.myClusterTextStyle}>
+            {cluster.pointCount}
+          </Text>
+        </View>
+      </Marker>
+    );
   }
 
   return (
-    <View style={styles.container}>
-      <MapView
-        style={styles.map}
-        initialRegion={{
-          latitude: 30.26714,
-          longitude: -97.74259,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
-        }}
-      >
-        {markers.map((marker, index) => (
-          <Marker
-            key={index}
-            coordinate={marker.coordinate}
-            title={marker.title}
-            description={marker.description}
-          >
-            <Callout onPress={async () => onPressMarkerCallout(marker)}>
-              <Text style={styles.calloutTitle}>{marker.title}</Text>
-              <Text>Tap here for details</Text>
-            </Callout>
-          </Marker>
-        ))}
-      </MapView>
-    </View>
+    <ClusteredMapView
+      style={styles.map}
+      data={markers}
+      renderMarker={renderMarker}
+      renderCluster={renderCluster}
+      initialRegion={{
+        latitude: 30.26714,
+        longitude: -97.74259,
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421,
+      }}
+    />
   );
 }
+
+const styles = StyleSheet.create({
+  map: { flex: 1, },
+  myClusterStyle: {
+    width: 30,
+    height: 30,
+    padding: 6,
+    borderWidth: 1,
+    borderRadius: 15,
+    alignItems: 'center',
+    borderColor: '#65bc46',
+    justifyContent: 'center',
+    backgroundColor: 'white',
+  },
+  myClusterTextStyle: {
+    fontSize: 13,
+    color: '#65bc46',
+    fontWeight: '500',
+    textAlign: 'center',
+  },
+});
